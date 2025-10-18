@@ -12,8 +12,7 @@ fi
 playernum=$1
 
 #TODO set this to where your code and jar file root dir is
-BASEDIR=$HOME/paxos/comp512st/tiapp
-
+BASEDIR=$HOME/paxos
 #TODO update your group number here in place of XX
 group=26
 
