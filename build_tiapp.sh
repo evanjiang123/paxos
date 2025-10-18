@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #TODO Edit this dir name to where your comp512.jar and build_tiapp.sh script are.
-BASEDIR=/Users/evanjiang/Desktop/comp_512/p2-students/comp512p2
+BASEDIR=/$HOME/paxos
 
 if [[ ! -d $BASEDIR ]]
 then
