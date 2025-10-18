@@ -1,0 +1,29 @@
+# Log files
+*.log
+
+# Compiled Java class files
+*.class
+
+# macOS files
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Temporary files
+*.swp
+*.swo
+*~
+
+# Build artifacts
+*.jar.bak
+*.bak
+
+# Test output files
+game-*-display.log
+game-*-processinfo-*.log
+
+# Documentation/guide files
+*.md
