@@ -211,7 +211,7 @@ public class Paxos{
 			for (String process : allProcesses) {
 				gcl.sendMsg(propose, process);
 			}
-		failCheck.checkFailure(FailCheck.FailureType.AFTERSENDPROPOSE);
+			failCheck.checkFailure(FailCheck.FailureType.AFTERSENDPROPOSE);
 
 			// try to get majority promises
 			try {
@@ -232,8 +232,8 @@ public class Paxos{
 					continue;
 				}
 			}
-		failCheck.checkFailure(FailCheck.FailureType.AFTERBECOMINGLEADER);
-			
+			failCheck.checkFailure(FailCheck.FailureType.AFTERBECOMINGLEADER);
+
 			// if previously accepted value, then propose that value, else propose our own value
 			Object valueToPropose = value;
 			synchronized (state) {
@@ -277,10 +277,10 @@ public class Paxos{
 					logger.warning("Position " + position + ": Lost acks, retrying");
 					continue;
 				}
-		failCheck.checkFailure(FailCheck.FailureType.AFTERVALUEACCEPT);
 			}
-			
-			// Concensus reahced, seending confirm to eveyrone
+			failCheck.checkFailure(FailCheck.FailureType.AFTERVALUEACCEPT);
+
+			// Consensus reached, sending confirm to everyone
 			logger.info("Position " + position + ": Consensus reached! Decided value: " + valueToPropose);
 			synchronized (state) {
 				state.decided = true;
@@ -356,7 +356,8 @@ public class Paxos{
 		synchronized (this) {
 			if (msg.highestBallot.ballotId >= myBallotCounter) {
 				myBallotCounter = msg.highestBallot.ballotId + 1;
-				logger.info("Updated ballot counter to " + myBallotCounter +" after refuse from " + sender);}
+				logger.info("Updated ballot counter to " + myBallotCounter +" after refuse from " + sender);
+			}
 		}
 	}
 
@@ -372,7 +373,7 @@ public class Paxos{
 
 				AckMessage ack = new AckMessage(msg.position, msg.ballot);
 				gcl.sendMsg(ack, sender);
-			failCheck.checkFailure(FailCheck.FailureType.AFTERSENDVOTE);
+				failCheck.checkFailure(FailCheck.FailureType.AFTERSENDVOTE);
 				logger.info("Sent ack to " + sender + " for position " + msg.position + " ballot " + msg.ballot);
 
 			} else {
