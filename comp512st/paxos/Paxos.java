@@ -211,6 +211,7 @@ public class Paxos{
 			for (String process : allProcesses) {
 				gcl.sendMsg(propose, process);
 			}
+		failCheck.checkFailure(FailCheck.FailureType.AFTERSENDPROPOSE);
 
 			// try to get majority promises
 			try {
@@ -231,6 +232,7 @@ public class Paxos{
 					continue;
 				}
 			}
+		failCheck.checkFailure(FailCheck.FailureType.AFTERBECOMINGLEADER);
 			
 			// if previously accepted value, then propose that value, else propose our own value
 			Object valueToPropose = value;
@@ -275,6 +277,7 @@ public class Paxos{
 					logger.warning("Position " + position + ": Lost acks, retrying");
 					continue;
 				}
+		failCheck.checkFailure(FailCheck.FailureType.AFTERVALUEACCEPT);
 			}
 			
 			// Concensus reahced, seending confirm to eveyrone
@@ -306,18 +309,23 @@ public class Paxos{
 	private void handlePropose(ProposeMessage msg, String sender) {
 		logger.info("Received propose from " + sender + ": " + msg);
 
+		// Fail point 1: RECEIVEPROPOSE
+		failCheck.checkFailure(FailCheck.FailureType.RECEIVEPROPOSE);
+
 		PositionState state = getOrCreatePositionState(msg.position);
 		synchronized (state) {
 			if (state.promisedBallot == null || msg.ballot.compareTo(state.promisedBallot) > 0) {
 				state.promisedBallot = msg.ballot;
 
 				PromiseMessage promise = new PromiseMessage(msg.position, msg.ballot, state.acceptedBallot, state.acceptedValue);
-				gcl.sendMsg(promise, sender);  
+				gcl.sendMsg(promise, sender);
+				failCheck.checkFailure(FailCheck.FailureType.AFTERSENDVOTE);
 				logger.info("Sent promise to " + sender + " for position " + msg.position + " ballot " + msg.ballot);
 
 			} else {
 				RefuseMessage refuse = new RefuseMessage(msg.position, state.promisedBallot);
-				gcl.sendMsg(refuse, sender);  
+				gcl.sendMsg(refuse, sender);
+				failCheck.checkFailure(FailCheck.FailureType.AFTERSENDVOTE);
 				logger.info("Sent refuse to " + sender + " for position " + msg.position +", already promised " + state.promisedBallot);
 			}
 		}
@@ -364,6 +372,7 @@ public class Paxos{
 
 				AckMessage ack = new AckMessage(msg.position, msg.ballot);
 				gcl.sendMsg(ack, sender);
+			failCheck.checkFailure(FailCheck.FailureType.AFTERSENDVOTE);
 				logger.info("Sent ack to " + sender + " for position " + msg.position + " ballot " + msg.ballot);
 
 			} else {
